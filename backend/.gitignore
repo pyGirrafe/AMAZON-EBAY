@@ -1,0 +1,9 @@
+# Ignore Python virtual environments
+.venv/
+
+# Ignore Python cache files
+app/__pycache__/
+app/routes/__pycache__/
+
+# Ignore environment variables files
+.env
