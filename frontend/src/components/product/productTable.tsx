@@ -1,7 +1,7 @@
 "use client";
 
-import { UpdateInvoice, DeleteInvoice } from '../core/button';
 import Image from 'next/image';
+import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 import { ProductProps } from '@/type';
 
@@ -37,6 +37,10 @@ export default function Table({ products }: TableProps) {
                         <Image
                           src={product.image}
                           alt={product.title}
+                          style={{
+                            width: "50px",
+                            height: "50px"
+                          }}
                           width={50}
                           height={50}
                         />
@@ -66,3 +70,25 @@ export default function Table({ products }: TableProps) {
     </div>
   );
 }
+
+export function UpdateInvoice({ id }: { id: string }) {
+  return (
+    <button
+      className="rounded-md border p-2 hover:bg-gray-100"
+    >
+      <PencilIcon className="w-5" />
+    </button>
+  );
+}
+
+export function DeleteInvoice({ id }: { id: string }) {
+  return (
+    <form>
+      <button className="rounded-md border p-2 hover:bg-gray-100">
+        <span className="sr-only">Delete</span>
+        <TrashIcon className="w-5" />
+      </button>
+    </form>
+  );
+}
+

@@ -52,6 +52,9 @@ export default function Product() {
                 <Search />
                 <CreateButton name='Create Product' />
             </div>
+            {/* <div className="mt-4">
+                <span className="font-bold text-sm">Total Counts:</span> {' '} <span className="text-sm">{products?.length}</span>
+            </div> */}
             <Table products={products} />
             <div className="mt-5 flex w-full justify-center">
                 <Pagination totalPages={10} page={page} per_page={per_page} pageControl={pageControl} />

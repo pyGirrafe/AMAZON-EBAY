@@ -1,4 +1,3 @@
-import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import clsx from 'clsx';
 
@@ -18,23 +17,5 @@ export default function Button({ children, className, ...rest }: ButtonProps) {
   );
 }
 
-export function UpdateInvoice({ id }: { id: string }) {
-  return (
-    <Button
-      className="rounded-md border p-2 hover:bg-gray-100"
-    >
-      <PencilIcon className="w-5" />
-    </Button>
-  );
-}
 
-export function DeleteInvoice({ id }: { id: string }) {
-  return (
-    <form>
-      <button className="rounded-md border p-2 hover:bg-gray-100">
-        <span className="sr-only">Delete</span>
-        <TrashIcon className="w-5" />
-      </button>
-    </form>
-  );
-}
+

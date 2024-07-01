@@ -9,7 +9,7 @@ import {
 import clsx from 'clsx';
 
 const links = [
-    { name: 'Isbns', href: '/admin/isbn', icon: QueueListIcon },
+    { name: 'ISBNS', href: '/admin/isbn', icon: QueueListIcon },
     { name: 'Products', href: '/admin/product', icon: DocumentDuplicateIcon },
     { name: 'Orders', href: '/admin/order', icon: UserGroupIcon },
     { name: 'Users', href: '/admin/user', icon: UserCircleIcon },

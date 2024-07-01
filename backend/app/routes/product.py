@@ -15,10 +15,11 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
 router = APIRouter()
 
 @router.post("/search")
-def search_ebay_isbn(session: SessionDep, isbns: Isbns) -> Any:
+def search_ebay_isbn(session: SessionDep, current_user: CurrentUser, isbns: Isbns) -> Any:
     total_count = 0
+    print(isbns.isbns)
     try:
-        for isbn in isbns.isbns:
+        for isbn in isbns.isbns:    
             ebay_products = ebay_api.search_ebay_by_isbn(isbn)
             total_count += len(ebay_products)
             for ebay_product in ebay_products:
