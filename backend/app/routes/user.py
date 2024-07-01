@@ -2,11 +2,10 @@ from datetime import timedelta
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
 
 from app.db import get_db
-from app.models import Token, UserCreate
+from app.models import Token, UserRegister, UserLogin
 from app import crud
 from app.settings import settings
 from app.utils import create_access_token
@@ -17,13 +16,13 @@ router = APIRouter()
 
 @router.post("/login")
 def login_user(
-    session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+    session: SessionDep, form_data: UserLogin
 ) -> Token:
     """
     OAuth2 compatible token login, get an access token for future requests
     """
     user = crud.authenticate(
-        session=session, email=form_data.username, password=form_data.password
+        session=session, email=form_data.email, password=form_data.password
     )
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect email or password")
@@ -37,7 +36,7 @@ def login_user(
     )
 
 @router.post("/register")
-def create_user(*, session: SessionDep, user_in: UserCreate) -> Any:
+def create_user(*, session: SessionDep, user_in: UserRegister) -> Any:
     """
     Create new user.
     """
