@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import SideNav from "@/components/sidebar/sidebar";
+import SideBar from "@/components/Sidebar";
 
 export const metadata: Metadata = {
     title: "Admin",
@@ -14,8 +14,8 @@ export default function RootLayout({
 }>) {
     return (
         <div className="flex flex-row h-screen">
-            <div className="flex w-1/6"><SideNav /></div>
-            <div className="flex w-5/6 p-6">{children}</div>
+            <div className="flex w-1/6"><SideBar /></div>
+            <div className="flex w-5/6 p-6 overflow-y-auto">{children}</div>
         </div>
     );
 }

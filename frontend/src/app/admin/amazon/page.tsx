@@ -1,15 +1,15 @@
 import { Metadata } from 'next';
 
-import User from "@/components/User";
+import Amazon from "@/components/Amazon";
 
 export const metadata: Metadata = {
-  title: "Users"
+  title: "Amazon Product"
 }
 
-export default function UserPage() {
+export default function ProductPage() {
   return (
     <div className="w-full">
-      <User />
+      <Amazon />
     </div>
   );
 }

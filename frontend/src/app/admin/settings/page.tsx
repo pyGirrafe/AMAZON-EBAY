@@ -1,15 +1,15 @@
 import { Metadata } from 'next';
 
-import User from "@/components/User";
+import Settings from '@/components/Settings';
 
 export const metadata: Metadata = {
-  title: "Users"
+  title: "Settings"
 }
 
-export default function UserPage() {
+export default function IsbnPage() {
   return (
     <div className="w-full">
-      <User />
+      <Settings />
     </div>
   );
 }
