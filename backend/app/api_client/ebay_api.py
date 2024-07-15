@@ -1,6 +1,7 @@
 import requests
+from requests.exceptions import ConnectTimeout, HTTPError, RequestException
 from dotenv import load_dotenv
-import json
+import time
 
 from app.token.ebay_token import get_basic_oauth_token
 
@@ -17,7 +18,6 @@ def search_ebay_by_isbn(isbn):
     
     params = {
         'q': isbn,
-        'filter': 'buyingOptions:{FIXED_PRICE},itemLocationCountry:US',
         'limit': 200,
         'offset': 0
     }
@@ -32,8 +32,8 @@ def search_ebay_by_isbn(isbn):
             items = data.get('itemSummaries', [])
             all_items.extend(items)
 
-            print(f"Page {current_page} - Items collected so far: {len(all_items)}")
-            
+            print(f"Page {current_page} - Items collected so far: {len(items)}")
+
             next_page = data.get('next', None)
             if next_page:
                 params['offset'] += 200
@@ -42,7 +42,6 @@ def search_ebay_by_isbn(isbn):
                 break
         else:
             response.raise_for_status()
-
     return all_items
 
 def search_ebay_by_item_id(item_id):
@@ -53,24 +52,50 @@ def search_ebay_by_item_id(item_id):
         'Content-Type': 'application/json'
     }
     
-    response = requests.get(EBAY_GET_ITEM_ENDPOINT, headers=headers)
-    
-    if response.status_code == 200:
-        data = response.json()
-        return data
-    else:
-        print(f"Failed to fetch eBay item with ID {item_id}. Status code: {response.status_code}")
-        return None
-    
+    retries = 3
+    backoff_factor = 0.3
+    timeout = 10
+
+    for attempt in range(retries):
+        try:
+            response = requests.get(EBAY_GET_ITEM_ENDPOINT, headers=headers, timeout=timeout)
+            response.raise_for_status()
+            return response.json()
+        except ConnectTimeout:
+            print(f"Attempt {attempt + 1}: Connection timed out. Retrying...")
+            time.sleep(backoff_factor * (2 ** attempt))
+        except HTTPError as http_err:
+            print(f"HTTP error occurred: {http_err}")
+            break
+        except RequestException as req_err:
+            print(f"Request error occurred: {req_err}")
+            break
+    return None
+
 def get_ebay_itemId(all_items):
     all_itemIds = []
     item_count = 1
     for item in all_items:
-        print(f"{item_count}: ItemId {item["itemId"]}")
-        itemId = search_ebay_by_item_id(item["itemId"])
-        all_itemIds.append(itemId)
-        item_count = item_count +  1
+        filtered_item = filter_item(item)
+        if filtered_item:
+            print(f"{item_count}: ItemId {item["itemId"]}")
+            itemId = search_ebay_by_item_id(item["itemId"])
+            all_itemIds.append(itemId)
+            item_count = item_count +  1
     return all_itemIds
+
+def filter_item(item):
+    conditionId = item.get("conditionId")
+    buyingOptions = item.get("buyingOptions")
+    listingMarketplaceId = item.get("listingMarketplaceId")
+
+    if conditionId is not None and buyingOptions is not None and listingMarketplaceId is not None:
+        try:
+            if int(conditionId) < 4500 and "FIXED_PRICE" in buyingOptions and listingMarketplaceId == "EBAY_US":
+                return item
+        except ValueError:
+            return None
+    return None
 
 def filter_details(data):
     eb_itemId = data.get("itemId")
@@ -139,6 +164,7 @@ def get_ebay_product(isbn):
     all_items = search_ebay_by_isbn(isbn)
     print(f"Total Count of Items: {len(all_items)}")
     all_itemIds = get_ebay_itemId(all_items)
+    print(f"Total Available Count of Items: {len(all_itemIds)}")
     
     products = []
     for item in all_itemIds:
